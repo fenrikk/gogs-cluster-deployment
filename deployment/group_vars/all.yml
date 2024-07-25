@@ -1,0 +1,44 @@
+---
+# Database settings
+db_name: gogs
+db_user: gogs
+db_password: gogs
+
+# Gogs settings
+gogs_user: git
+gogs_group: git
+gogs_home: /opt/gogs
+gogs_server_port: 3000
+gogs_repositories_path: /home/{{ gogs_user }}/gogs-repositories
+
+# Balancer settings
+nginx_port: 80
+
+# Build settings
+repo_url: "https://github.com/gogs/gogs.git"
+repo_name: "gogs"
+artifact_name: "gogs"
+artifacts_dir: "/artifacts"
+
+# Filehost settings
+samba_user: samba
+samba_password: samba
+samba_repositories_path: /repositories
+
+# General settings
+gogs_brand_name: Gogs
+gogs_default_branch: master
+
+# Network settings
+# It is important to set ip addres, witch would be user to connetc to server
+# To make correct navigation between web pages
+gogs_external_ip: 10.211.55.25
+
+# Servers ip adresses
+database_ip: database
+build_ip: build
+filehost_ip: filehost
+balancer_ip: balancer
+gogs_servers_ip:
+  - { name: "gogs1", address: "gogs1" }
+  - { name: "gogs2", address: "gogs2" }

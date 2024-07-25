@@ -1,0 +1,54 @@
+BRAND_NAME = {{ gogs_brand_name }}
+RUN_USER   = {{ gogs_user }}
+RUN_MODE   = prod
+
+[database]
+TYPE     = postgres
+HOST     = {{ database_ip }}:5432
+NAME     = {{ db_name }}
+SCHEMA   = public
+USER     = {{ db_user }}
+PASSWORD = {{ db_password }}
+SSL_MODE = disable
+PATH     = {{ gogs_home }}/data/gogs.db
+
+[repository]
+ROOT           = {{ gogs_repositories_path }}
+DEFAULT_BRANCH = {{ gogs_default_branch }}
+
+[server]
+DOMAIN           = {{ gogs_external_ip }}
+HTTP_PORT        = {{ gogs_server_port }}
+EXTERNAL_URL     = http://{{ gogs_external_ip }}:{{ nginx_port }}/
+DISABLE_SSH      = false
+SSH_PORT         = {{ ansible_port }}
+START_SSH_SERVER = false
+OFFLINE_MODE     = false
+
+[email]
+ENABLED = false
+
+[auth]
+REQUIRE_EMAIL_CONFIRMATION  = false
+DISABLE_REGISTRATION        = false
+ENABLE_REGISTRATION_CAPTCHA = true
+REQUIRE_SIGNIN_VIEW         = false
+
+[user]
+ENABLE_EMAIL_NOTIFICATION = false
+
+[picture]
+DISABLE_GRAVATAR        = false
+ENABLE_FEDERATED_AVATAR = false
+
+[session]
+PROVIDER = file
+
+[log]
+MODE      = file
+LEVEL     = Info
+ROOT_PATH = {{ gogs_home }}/log
+
+[security]
+INSTALL_LOCK = true
+SECRET_KEY   = H7tkoKIXJ7Ik3UV

@@ -1,0 +1,63 @@
+---
+- name: Install dependencies
+  apt:
+    name: 
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+      - acl
+    state: present
+    update_cache: true
+
+- name: Start PostgreSQL
+  service:
+    name: postgresql
+    state: started
+
+- name: Ensure PostgreSQL is running
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Detecting PostgreSQL version
+  shell: psql --version | awk '{print $3}' | cut -d. -f1
+  register: postgres_version
+  changed_when: false    
+
+- name: Create PostgreSQL user
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    role_attr_flags: CREATEDB
+
+- name: Create Database 
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+
+- name: Grant all privs
+  become: true
+  become_user: postgres
+  postgresql_privs:
+    type: database
+    database: "{{ db_name }}"
+    roles: "{{ db_user }}"
+    privs: ALL
+
+- name: Setting listen_addresses in postgresql.conf
+  lineinfile:
+    path: "/etc/postgresql/{{ postgres_version.stdout }}/main/postgresql.conf"
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses = '*'"
+  notify: Restart PostgreSQL
+
+- name: Allow connections in pg_hba.conf
+  lineinfile:
+    path: "/etc/postgresql/{{ postgres_version.stdout }}/main/pg_hba.conf"
+    line: "host all all 0.0.0.0/0 md5"
+  notify: Restart PostgreSQL

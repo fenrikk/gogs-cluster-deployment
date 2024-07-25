@@ -1,0 +1,103 @@
+---
+- name: Install dependencies
+  apt:
+    name: 
+      - rsync
+      - systemctl
+      - git
+      - cifs-utils
+    state: present
+    update_cache: true
+
+- name: Create Gogs user
+  user:
+    name: "{{ gogs_user }}"
+    comment: "Gogs"
+    create_home: true
+    shell: /usr/bin/bash
+    password_lock: true
+
+- name: Creating mount point
+  file:
+    path: "{{ gogs_repositories_path }}"
+    state: directory
+    owner: "{{ gogs_user }}"
+    group: "{{ gogs_group }}"
+    mode: '0755'
+
+- name: Mounting samba share
+  mount:
+    path: "{{ gogs_repositories_path }}"
+    src: "//{{ filehost_ip }}{{ samba_repositories_path }}"
+    fstype: cifs
+    opts: "username={{ samba_user }},password={{ samba_password }},uid={{ gogs_user }},gid={{ gogs_user }}"
+    state: mounted
+
+- name: Create gogs directory
+  file:
+    path: "{{ gogs_home }}"
+    state: directory
+    mode: '0755'
+
+- name: Create custom directory
+  file:
+    path: "{{ gogs_home }}/custom"
+    state: directory
+    mode: '0755'
+
+- name: Create conf directory
+  file:
+    path: "{{ gogs_home }}/custom/conf"
+    state: directory
+    mode: '0755'
+
+- name: Create log directory
+  file:
+    path: "{{ gogs_home }}/log"
+    state: directory
+    mode: '0755'
+
+- name: Fetch artifacts from buildServer
+  fetch:
+    src: "{{ artifacts_dir }}/{{ item }}"
+    dest: "/tmp/artifacts/"
+    flat: true
+  delegate_to: build
+  loop:
+    - gogs
+
+- name: Copy artifacts to gogsServer
+  copy:
+    src: "/tmp/artifacts/{{ item }}"
+    dest: "{{ gogs_home }}/{{ item }}"
+  loop:
+    - gogs
+
+- name: Generate and copy Gogs config file
+  template:
+    src: app.ini.j2
+    dest: "{{ gogs_home }}/custom/conf/app.ini"
+    owner: '{{ gogs_user }}'
+    group: '{{ gogs_group }}'
+    mode: '0644'
+
+- name: Set ownership and permissions for Gogs directory
+  file:
+    path: "{{ gogs_home }}"
+    owner: "{{ gogs_user }}"
+    group: "{{ gogs_group }}"
+    mode: '0755'
+    recurse: true
+
+- name: Generate and copy Gogs service file
+  template:
+    src: gogs.service.j2
+    dest: /etc/systemd/system/gogs.service
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Start and enable Gogs service
+  systemd:
+    name: gogs
+    state: started
+    enabled: true

@@ -1,0 +1,59 @@
+---
+- name: Setting Up Environment
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  tasks:
+    - name: Find ubuntu-sshd-with-sudo containers
+      ansible.builtin.command: docker ps -a --filter ancestor=ubuntu-sshd-with-sudo -q
+      register: container_list
+      changed_when: false
+
+    - name: Stop and remove ubuntu-sshd-with-sudo containers
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: absent
+        force_kill: yes
+      loop: "{{ container_list.stdout_lines }}"
+      when: container_list.stdout_lines | length > 0
+
+    - name: Clone or update ubuntu-sshd-with-sudo repository
+      ansible.builtin.git:
+        repo: 'https://github.com/fenrikk/ubuntu-sshd-with-sudo'
+        dest: ./ubuntu-sshd
+        version: main
+        update: yes
+      register: repo_status
+
+    - name: Check if ubuntu-sshd-with-sudo image exists
+      community.docker.docker_image_info:
+        name: ubuntu-sshd-with-sudo:latest
+      register: image_info
+
+    - name: Build ubuntu-sshd-with-sudo image if repo updated or image doesn't exist
+      community.docker.docker_image:
+        source: build
+        build:
+          path: ./ubuntu-sshd
+        name: ubuntu-sshd-with-sudo
+        tag: latest
+      when: repo_status.changed or image_info.images | length == 0
+
+    - name: Generate SSH key if it doesn't exist
+      ansible.builtin.openssh_keypair:
+        path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+
+    - name: Start containers
+      ansible.builtin.shell:
+        cmd: SSH_PUBLIC_KEY="$(cat {{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub)" docker compose up -d
+      environment:
+        PATH: '{{ ansible_env.PATH }}:/usr/local/bin'
+
+    - name: Generate hosts.yml file
+      ansible.builtin.script:
+        cmd: ./create_hosts_yml.sh

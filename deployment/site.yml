@@ -1,0 +1,45 @@
+---
+- name: Setup database server
+  hosts: database
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - database
+
+- name: Setup build server
+  hosts: build
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - build
+
+- name: Setup filehost server
+  hosts: filehost
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - filehost
+
+- name: Setup gogs server
+  hosts: gogs*
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - gogs
+
+- name: Setup balancer server
+  hosts: balancer
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - balancer

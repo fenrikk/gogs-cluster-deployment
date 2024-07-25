@@ -1,0 +1,39 @@
+---
+- name: Install dependencies
+  apt:
+    name: 
+      - samba
+    state: present
+    update_cache: true
+
+- name: Create linux samba user
+  user:
+    name: "{{ samba_user }}"
+    comment: "Samba"
+    create_home: true
+    shell: /usr/bin/bash
+    password_lock: true
+
+- name: Create Samba user
+  shell: "(echo {{ samba_password }}; echo {{ samba_password }}) | smbpasswd -s -a {{ samba_user }}"
+  no_log: true
+
+- name: Activate user Samba
+  shell: "smbpasswd -e {{ samba_user }}"
+
+- name: Create share dir
+  file:
+    path: "{{ samba_repositories_path }}"
+    state: directory
+    owner: "{{ samba_user }}"
+    group: "{{ samba_user }}"
+    mode: '0755'
+
+- name: Creating samba configuration file
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Samba
