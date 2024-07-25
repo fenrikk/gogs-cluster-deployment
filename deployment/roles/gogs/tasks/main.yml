@@ -101,3 +101,4 @@
     name: gogs
     state: started
     enabled: true
+  retries: 3
