@@ -1,0 +1,37 @@
+---
+- name: Install dependencies
+  apt:
+    name: 
+      - git
+      - golang
+      - rsync
+    state: present
+    update_cache: true
+
+- name: Create artifacts directory
+  file:
+    path: "{{ artifacts_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create sources directory
+  file:
+    path: "{{ artifacts_dir }}/sources"
+    state: directory
+    mode: '0755'
+
+- name: Clone or update the gogs repository
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ artifacts_dir }}/sources/{{ repo_name }}"
+    version: main
+    update: yes
+  register: repo_status
+
+- name: Build the gogs artifact
+  command:
+    cmd: go build -o {{ artifacts_dir }}/{{ artifact_name }}
+    chdir: "{{ artifacts_dir }}/sources/{{ repo_name }}"
+  environment:
+    GOPATH: "{{ artifacts_dir }}/sources/{{ repo_name }}"
+  when: repo_status.changed
