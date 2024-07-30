@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DOCKER_COMPOSE_FILE="docker-compose.yml"
-HOSTS_FILE="../deployment/hosts.yml"
+HOSTS_FILE="../hosts.yml"
 
 echo "all:" > $HOSTS_FILE
 echo "  hosts:" >> $HOSTS_FILE
