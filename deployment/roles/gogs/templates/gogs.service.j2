@@ -9,7 +9,7 @@ Type=simple
 User={{ gogs_user }}
 Group={{ gogs_group }}
 WorkingDirectory={{ gogs_home }}
-ExecStart={{ gogs_home }}/gogs web
+ExecStart={{ gogs_home }}/{{ gogs_artifact_name }} web
 Restart=always
 Environment=USER={{ gogs_user }} HOME=/home/{{ gogs_user }}
 

@@ -8,15 +8,6 @@
   roles:
     - database
 
-- name: Setup build server
-  hosts: build
-  become: true
-  gather_facts: true
-  vars_files:
-    - group_vars/all.yml
-  roles:
-    - build
-
 - name: Setup filehost server
   hosts: filehost
   become: true
