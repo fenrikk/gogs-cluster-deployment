@@ -57,21 +57,11 @@
     state: directory
     mode: '0755'
 
-- name: Fetch artifacts from buildServer
-  fetch:
-    src: "{{ artifacts_dir }}/{{ item }}"
-    dest: "/tmp/artifacts/"
-    flat: true
-  delegate_to: build
-  loop:
-    - gogs
-
-- name: Copy artifacts to gogsServer
-  copy:
-    src: "/tmp/artifacts/{{ item }}"
-    dest: "{{ gogs_home }}/{{ item }}"
-  loop:
-    - gogs
+- name: Download Gogs binary
+  get_url:
+    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/latest/{{ gogs_artifact_name }}"
+    dest: "{{ gogs_home }}/{{ gogs_artifact_name }}"
+    mode: '0755'
 
 - name: Generate and copy Gogs config file
   template:

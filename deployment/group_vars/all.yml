@@ -14,11 +14,9 @@ gogs_repositories_path: /home/{{ gogs_user }}/gogs-repositories
 # Balancer settings
 nginx_port: 80
 
-# Build settings
-repo_url: "https://github.com/gogs/gogs.git"
-repo_name: "gogs"
-artifact_name: "gogs"
-artifacts_dir: "/artifacts"
+# Repository settings
+gogs_repository: "10.211.55.29:8081"
+gogs_artifact_name: "gogs-latest.bin"
 
 # Filehost settings
 samba_user: samba
