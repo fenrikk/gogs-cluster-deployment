@@ -1,0 +1,8 @@
+- name: Update gogs server
+  hosts: gogs*
+  become: true
+  gather_facts: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - update-gogs

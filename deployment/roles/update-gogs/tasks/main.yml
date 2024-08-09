@@ -1,0 +1,33 @@
+---
+- name: Stop Gogs service
+  systemd:
+    name: gogs
+    state: stopped
+
+- name: Download latest Gogs binary
+  get_url:
+    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/latest/{{ gogs_artifact_name }}"
+    dest: "{{ gogs_home }}/{{ gogs_artifact_name }}"
+    mode: '0755'
+    force: true
+
+- name: Set ownership of Gogs binary
+  file:
+    path: "{{ gogs_home }}/{{ gogs_artifact_name }}"
+    owner: "{{ gogs_user }}"
+    group: "{{ gogs_group }}"
+
+- name: Start Gogs service
+  systemd:
+    name: gogs
+    state: started
+    daemon_reload: true
+
+- name: Check if Gogs is running
+  uri:
+    url: "http://localhost:{{ gogs_server_port }}"
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 6
+  delay: 10
