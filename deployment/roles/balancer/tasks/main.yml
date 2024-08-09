@@ -5,7 +5,7 @@
       - nginx
       - nginx-extras
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Create Nginx configuration
   template:

@@ -1,7 +1,7 @@
 ---
 - name: Install dependencies
   apt:
-    name: 
+    name:
       - postgresql
       - postgresql-contrib
       - python3-psycopg2
