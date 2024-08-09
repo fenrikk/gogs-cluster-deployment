@@ -16,7 +16,6 @@ nginx_port: 80
 
 # Repository settings
 gogs_repository: "10.211.55.29:8081"
-gogs_artifact_name: "gogs-latest.bin"
 
 # Filehost settings
 samba_user: samba

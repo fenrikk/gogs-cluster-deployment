@@ -1,21 +1,26 @@
----
 - name: Stop Gogs service
   systemd:
     name: gogs
     state: stopped
 
-- name: Download latest Gogs binary
+- name: Download specific Gogs binary
   get_url:
-    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/latest/{{ gogs_artifact_name }}"
-    dest: "{{ gogs_home }}/{{ gogs_artifact_name }}"
+    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/{{ gogs_version }}/gogs-{{ gogs_version }}.bin"
+    dest: "{{ gogs_home }}/gogs-{{ gogs_version }}"
     mode: '0755'
     force: true
 
 - name: Set ownership of Gogs binary
   file:
-    path: "{{ gogs_home }}/{{ gogs_artifact_name }}"
+    path: "{{ gogs_home }}/gogs-{{ gogs_version }}"
     owner: "{{ gogs_user }}"
     group: "{{ gogs_group }}"
+
+- name: Update symlink to new version
+  file:
+    src: "{{ gogs_home }}/gogs-{{ gogs_version }}"
+    dest: "{{ gogs_home }}/gogs"
+    state: link
 
 - name: Start Gogs service
   systemd:
