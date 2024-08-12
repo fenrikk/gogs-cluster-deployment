@@ -5,7 +5,7 @@
 
 - name: Download specific Gogs binary
   get_url:
-    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/{{ gogs_version }}/gogs-{{ gogs_version }}.bin"
+    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/{{ gogs_version }}/gogs-{{ gogs_version }}"
     dest: "{{ gogs_home }}/gogs-{{ gogs_version }}"
     mode: '0755'
     force: true
