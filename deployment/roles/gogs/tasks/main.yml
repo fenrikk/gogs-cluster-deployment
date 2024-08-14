@@ -59,7 +59,7 @@
 
 - name: Download Gogs binary
   get_url:
-    url: "http://{{ gogs_repository }}/repository/gogs-repository/com/gogs/gogs/latest/{{ gogs_artifact_name }}"
+    url: "http://{{ gogs_repository }}/repository/gogs-repository/gogs-artifacts/gogs/latest/{{ gogs_artifact_name }}"
     dest: "{{ gogs_home }}/{{ gogs_artifact_name }}"
     mode: '0755'
 
