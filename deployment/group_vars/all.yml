@@ -40,4 +40,4 @@ balancer_ip: balancer
 gogs_servers_ip:
   - { name: "gogs1", address: "gogs1" }
   - { name: "gogs2", address: "gogs2" }
-   - { name: "gogs3", address: "gogs3" }
+  - { name: "gogs3", address: "gogs3" }
